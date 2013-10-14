@@ -1,0 +1,38 @@
+#tool chain
+#CROSS = arm-hisiv100-linux-
+#CC = $(CROSS)g++
+CC = arm-none-linux-gnueabi-gcc
+CPP = arm-none-linux-gnueabi-g++
+STRIP = arm-none-linux-gnueabi-strip
+AR = arm-none-linux-gnueabi-ar
+
+
+#compile parameters
+#CFLAGS += -Wall -o2
+
+SRCDIRS     =./
+
+INCLUDES := $(foreach dir,$(SRCDIRS),-I$(dir))
+
+CFLAGS =  -static
+CFLAGS := $(CFLAGS) $(INCLUDES)
+CFLAGS += -D__OS_LINUX
+
+LIBS += -pthread
+
+#target source
+SRC := $(wildcard *.c)
+OBJ := $(SRC:%.c=%.o) 
+
+TARGET = rtspserver
+
+.PHONY: clean all
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CPP) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(STRIP) $@
+	
+clean:
+	@rm -f $(TARGET)
+	@rm -f $(OBJ)
