@@ -8,9 +8,4 @@ SimpleRecorder
 * output.c:      把编码后的H264码流写入MKV容器
 * main.c:        主函数,调用以上代码中的接口
 
-* 未编码图像用picture_t传递,内部是I420格式,编码后的码流用encoded_pic_t传递
-
----
-
-* master  是基于libx264的软编码器,速度慢,可以在PC上运行
-* s5pv210 是在210平台上跑的版本,使用的MFC硬件编码器
+* 增加多线程 及A10 H264硬编码  RTSP简单使用
