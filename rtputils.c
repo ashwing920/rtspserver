@@ -45,7 +45,7 @@ typedef struct
     /**//* bytes 2, 3 */
     unsigned short u16SeqNum;
     /**//* bytes 4-7 */
-    unsigned long u32TimeStamp;
+    unsigned long long u32TimeStamp;
     /**//* bytes 8-11 */
     unsigned long u32SSrc;			/**//* stream number is used here. */
 }StRtpFixedHdr;
@@ -79,10 +79,10 @@ typedef struct _tagStRtpHandle
 	int                 s32Sock;
 	struct sockaddr_in  stServAddr;
 	unsigned short      u16SeqNum;
-	unsigned int        u32TimeStampInc;
-	unsigned int        u32TimeStampCurr;
-	unsigned int		u32CurrTime;
-	unsigned int		u32PrevTime;
+	unsigned long long        u32TimeStampInc;
+	unsigned long long        u32TimeStampCurr;
+	unsigned long long		u32CurrTime;
+	unsigned long long		u32PrevTime;
 	unsigned int		u32SSrc;
 	StRtpFixedHdr		*pRtpFixedHdr;
 	StNaluHdr		    *pNaluHdr;
@@ -234,7 +234,7 @@ static int SendNalu264(HndRtp hRtp, char *pNalBuf, int s32NalBufSize)
 	hRtp->pRtpFixedHdr->u32SSrc		= hRtp->u32SSrc;
 	//计算时间戳
 	hRtp->pRtpFixedHdr->u32TimeStamp = htonl(hRtp->u32TimeStampCurr * (90000 / 1000));
-
+	//printf("sendnalu264 timestamp:%lld\n",hRtp->u32TimeStampCurr);
     if (gettimeofday(&stTimeval, NULL) == -1) {
         printf("Failed to get os time\n");
 		s32Ret = -1;
@@ -359,6 +359,7 @@ static int SendNalu711(HndRtp hRtp, char *buf, int bufsize)
 	memcpy(pSendBuf + 12, buf, bufsize);
 
 	hRtp->pRtpFixedHdr->u32TimeStamp = htonl(hRtp->u32TimeStampCurr);
+	//printf("SendNalu711 timestamp:%lld\n",hRtp->pRtpFixedHdr->u32TimeStamp);
 	s32Bytes = bufsize + 12;
 	if(sendto(hRtp->s32Sock, pSendBuf, s32Bytes, 0, (struct sockaddr *)&hRtp->stServAddr, sizeof(hRtp->stServAddr)) < 0)
 	{

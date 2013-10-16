@@ -237,7 +237,7 @@ void *schedule_do(void *arg)
 {
     int i=0;
     struct timeval now;
-    double mnow;
+    unsigned long long mnow;
     char *pDataBuf, *pFindNal;
 	unsigned int ringbuffer;
     struct timespec ts = {0,33333};
@@ -362,7 +362,7 @@ void *schedule_do(void *arg)
 					{
 //						RtpSend((unsigned int)(sched[i].rtp_session->hndRtp), pNalBuf, s32NalSize, mnow);
 						
-						//printf("send i frame,length:%d,pointer:%x\n",ringinfo.size,(int)(ringinfo.buffer));
+						//printf("send i frame,length:%d,pointer:%x,timestamp:%lld\n",ringinfo.size,(int)(ringinfo.buffer),mnow);
 						buflen=ringbuflen;
 						if (ringinfo.frame_type ==FRAME_TYPE_I) 
 								sched[i].BeginFrame=1;
