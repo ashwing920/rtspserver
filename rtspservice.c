@@ -1701,7 +1701,11 @@ void ScheduleConnections(RTSP_buffer **rtsp_list, int *conn_count)
                     pRtsp->session_list=NULL;
 
                     g_s32DoPlay--;
-
+					if (g_s32DoPlay == 0) 
+					{
+						printf("user abort! no user online now resetfifo\n");
+						ringreset;
+					}
                     fprintf(stderr,"WARNING! RTSP connection truncated before ending operations.\n");
                 }
 
@@ -1839,7 +1843,7 @@ void *cam_thread()
 		{		
 			/* Timeout. */  
 			tv.tv_sec = 0;  
-			tv.tv_usec = 33333;  
+			tv.tv_usec = 40000;  
 			nanosleep(&tv,NULL);
 			if(!camera_get_frame(&pic)){
 				printf("error1\r\n");
@@ -1847,6 +1851,7 @@ void *cam_thread()
 			}	
 			gen_osd_info();
 			osd_print(&pic, osd_string);
+			preview_display(&pic);
 			if(!encoder_encode_frame(&pic, &encoded_pic))
 				break;
 			FileSize+=encoded_pic.length;
