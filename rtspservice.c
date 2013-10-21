@@ -1843,7 +1843,7 @@ void *cam_thread()
 		{		
 			/* Timeout. */  
 			tv.tv_sec = 0;  
-			tv.tv_usec = 40000;  
+			tv.tv_usec = 33333;  
 			nanosleep(&tv,NULL);
 			if(!camera_get_frame(&pic)){
 				printf("error1\r\n");
