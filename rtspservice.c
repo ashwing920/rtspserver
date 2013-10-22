@@ -1286,7 +1286,13 @@ int RTSP_teardown(RTSP_buffer * pRtsp)
 		g_s32DoPlay--;
 
 	}
-
+	if (g_s32DoPlay == 0) 
+	{
+		printf("no user online now resetfifo\n");
+		ringreset;
+		/* 重新将所有可用的RTP端口号放入到port_pool[MAX_SESSION] 中 */
+		RTP_port_pool_init(RTP_DEFAULT_PORT);
+	}
 	//释放链表空间
 	if (pRtspSesn->rtp_session == NULL)
 	{
@@ -1705,8 +1711,10 @@ void ScheduleConnections(RTSP_buffer **rtsp_list, int *conn_count)
 					{
 						printf("user abort! no user online now resetfifo\n");
 						ringreset;
+						/* 重新将所有可用的RTP端口号放入到port_pool[MAX_SESSION] 中 */
+						RTP_port_pool_init(RTP_DEFAULT_PORT);
 					}
-                    fprintf(stderr,"WARNING! RTSP connection truncated before ending operations.\n");
+                    fprintf(stderr,"WARNING! fd:%d RTSP connection truncated before ending operations.\n",pRtsp->fd);
                 }
 
                 // wait for
@@ -1718,6 +1726,7 @@ void ScheduleConnections(RTSP_buffer **rtsp_list, int *conn_count)
                 if (pRtsp==*rtsp_list)
                 {
                 	//链表第一个元素就出错，则pRtspN为空
+					printf("first error,pRtsp is null\n");
                     *rtsp_list=pRtsp->next;
                     free(pRtsp);
                     pRtsp=*rtsp_list;
@@ -1726,9 +1735,11 @@ void ScheduleConnections(RTSP_buffer **rtsp_list, int *conn_count)
                 {
                 	//不是链表中的第一个，则把当前出错任务删除，并把next任务存放在pRtspN(上一个没有出错的任务)
                 	//指向的next，和当前需要处理的pRtsp中.
+					printf("dell current fd:%d\n",pRtsp->fd);
                 	pRtspN->next=pRtsp->next;
                     free(pRtsp);
                     pRtsp=pRtspN->next;
+					printf("current next fd:%d\n",pRtsp->fd);
                 }
 
                 /*适当情况下，释放调度器本身*/
@@ -1739,7 +1750,8 @@ void ScheduleConnections(RTSP_buffer **rtsp_list, int *conn_count)
                 }
             }
             else
-            {
+            {	
+				printf("current fd:%d\n",pRtsp->fd);
             	pRtsp = pRtsp->next;
             }
         }
